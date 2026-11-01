@@ -7,7 +7,6 @@
     <style>
         :root {
             --primary: #4f46e5;
-            --primary-hover: #4338ca;
             --bg: #f9fafb;
             --card-bg: #ffffff;
             --text: #1f2937;
@@ -64,7 +63,6 @@
             cursor: pointer;
             font-weight: 500;
             color: var(--text-light);
-            transition: all 0.2s;
         }
 
         .tab-btn.active {
@@ -85,7 +83,6 @@
             display: block;
         }
 
-        /* Top Form Panel */
         .top-form-panel {
             background: var(--bg);
             border: 1px solid var(--border);
@@ -142,11 +139,6 @@
             width: 100%;
         }
 
-        .submit-btn:hover {
-            opacity: 0.9;
-        }
-
-        /* Week Navigation */
         .week-nav-panel {
             display: flex;
             justify-content: space-between;
@@ -160,10 +152,6 @@
             background: white;
             border-radius: 6px;
             cursor: pointer;
-        }
-
-        .nav-btn:hover:not(:disabled) {
-            background: var(--bg);
         }
 
         .nav-btn:disabled {
@@ -206,15 +194,10 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.85rem;
-            transition: all 0.15s;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 2px;
-        }
-
-        .slot-btn:hover:not(:disabled) {
-            border-color: var(--primary);
         }
 
         .slot-btn.selected {
@@ -226,7 +209,6 @@
         .slot-btn:disabled {
             background: #f3f4f6;
             color: #9ca3af;
-            border-color: #e5e7eb;
             cursor: not-allowed;
             text-decoration: line-through;
         }
@@ -236,7 +218,6 @@
             opacity: 0.8;
         }
 
-        /* Admin View */
         .admin-actions {
             display: flex;
             gap: 12px;
@@ -249,11 +230,6 @@
             background: white;
             border-radius: 6px;
             cursor: pointer;
-            font-size: 0.9rem;
-        }
-
-        .action-btn:hover {
-            background: var(--bg);
         }
 
         .slots-summary {
@@ -302,16 +278,6 @@
             border-bottom: 1px dashed var(--border);
         }
 
-        .slot-visitors li:last-child {
-            border-bottom: none;
-        }
-
-        .empty-text {
-            color: var(--text-light);
-            font-style: italic;
-            font-size: 0.85rem;
-        }
-
         .success-message {
             background: #d1fae5;
             color: #065f46;
@@ -335,11 +301,9 @@
         </div>
     </header>
 
-    <!-- Вкладка заполнения -->
     <div id="user-view" class="view-section active">
         <div id="success-banner" class="success-message">Спасибо! Ваши предпочтения успешно сохранены.</div>
 
-        <!-- Верхняя плашка с полями ввода и кнопкой -->
         <div class="top-form-panel">
             <div class="form-row">
                 <div class="input-group">
@@ -354,29 +318,22 @@
             <button class="submit-btn" onclick="submitPreferences()">Отправить предпочтения</button>
         </div>
 
-        <!-- Навигация по неделям -->
         <div class="week-nav-panel">
             <button class="nav-btn" id="prev-week-btn" onclick="changeWeek(-1)">← Прошлая неделя</button>
             <span id="week-range-label" style="font-weight: 600;"></span>
             <button class="nav-btn" id="next-week-btn" onclick="changeWeek(1)">Следующая неделя →</button>
         </div>
 
-        <!-- Сетка дней и слотов -->
-        <div class="days-grid" id="days-container">
-            <!-- Дни недели генерируются динамически -->
-        </div>
+        <div class="days-grid" id="days-container"></div>
     </div>
 
-    <!-- Вкладка администратора -->
     <div id="admin-view" class="view-section">
         <div class="admin-actions">
             <button class="action-btn" onclick="generateTestData()">Добавить тестовые данные</button>
             <button class="action-btn" onclick="clearData()">Очистить все ответы</button>
             <button class="action-btn" onclick="exportJSON()">Скачать JSON</button>
         </div>
-        <div id="slots-summary-container" class="slots-summary">
-            <!-- Сводка по слотам генерируется динамически -->
-        </div>
+        <div id="slots-summary-container" class="slots-summary"></div>
     </div>
 </div>
 
@@ -390,17 +347,10 @@
     let selectedSlots = new Set();
     let isAdminAuthenticated = false;
 
-    const SLOT_NAMES = {
-        morning: 'Утро',
-        day: 'День',
-        evening: 'Вечер'
-    };
-
+    const SLOT_NAMES = { morning: 'Утро', day: 'День', evening: 'Вечер' };
     const DAYS_RU = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
 
-    function init() {
-        renderUserCalendar();
-    }
+    function init() { renderUserCalendar(); }
 
     function switchTab(tab) {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -441,12 +391,9 @@
     function getSlotMap() {
         let submissions = JSON.parse(localStorage.getItem('schedule_submissions') || '[]');
         let slotMap = {};
-
         submissions.forEach(sub => {
             sub.slots.forEach(slotId => {
-                if (!slotMap[slotId]) {
-                    slotMap[slotId] = [];
-                }
+                if (!slotMap[slotId]) slotMap[slotId] = [];
                 slotMap[slotId].push({ name: sub.name, vk: sub.vk });
             });
         });
@@ -563,9 +510,7 @@
 
         if (hasError) return;
 
-        if (selectedSlots.size === 0) {
-            return;
-        }
+        if (selectedSlots.size === 0) return;
 
         let slotMap = getSlotMap();
         for (let slotId of selectedSlots) {
@@ -577,7 +522,6 @@
         }
 
         let submissions = JSON.parse(localStorage.getItem('schedule_submissions') || '[]');
-        
         submissions.push({
             name: userName,
             vk: userVk,
@@ -602,12 +546,9 @@
 
         let submissions = JSON.parse(localStorage.getItem('schedule_submissions') || '[]');
         let slotMap = {};
-
         submissions.forEach(sub => {
             sub.slots.forEach(slotId => {
-                if (!slotMap[slotId]) {
-                    slotMap[slotId] = [];
-                }
+                if (!slotMap[slotId]) slotMap[slotId] = [];
                 slotMap[slotId].push({ name: sub.name, vk: sub.vk });
             });
         });
@@ -615,7 +556,7 @@
         let sortedSlotKeys = Object.keys(slotMap).sort();
 
         if (sortedSlotKeys.length === 0) {
-            container.innerHTML = '<p class="empty-text">Пока нет ни одного ответа.</p>';
+            container.innerHTML = '<p style="color: var(--text-light); font-style: italic;">Пока нет ни одного ответа.</p>';
             return;
         }
 
@@ -635,9 +576,7 @@
                     <span>${date} (${SLOT_NAMES[slotKey] || slotKey})</span>
                     <span class="slot-count ${isFull ? 'full' : ''}">${count} / ${MAX_PEOPLE_PER_SLOT} чел.</span>
                 </div>
-                <ul class="slot-visitors">
-                    ${visitorsHtml}
-                </ul>
+                <ul class="slot-visitors">${visitorsHtml}</ul>
             `;
             container.appendChild(card);
         });
@@ -646,8 +585,7 @@
     function generateTestData() {
         let sampleData = [
             { name: "Анна", vk: "vk.com/anna", slots: ["2026-11-16_morning", "2026-11-17_evening"], timestamp: new Date().toISOString() },
-            { name: "Иван С.", vk: "vk.com/ivan", slots: ["2026-11-16_morning", "2026-11-16_day"], timestamp: new Date().toISOString() },
-            { name: "Ольга М.", vk: "vk.com/olga", slots: ["2026-11-16_morning"], timestamp: new Date().toISOString() }
+            { name: "Иван С.", vk: "vk.com/ivan", slots: ["2026-11-16_morning", "2026-11-16_day"], timestamp: new Date().toISOString() }
         ];
         localStorage.setItem('schedule_submissions', JSON.stringify(sampleData));
         renderAdminSummary();
